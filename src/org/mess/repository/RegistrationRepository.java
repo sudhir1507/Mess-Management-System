@@ -8,11 +8,19 @@ import org.mess.model.RegistrationModel;
 public class RegistrationRepository extends DBConfig {
 	RegistrationModel model=new RegistrationModel();
 	MealModel mmodel=new MealModel();
-	public int getMealId(String mealType) {
+	public int getMealIDByName(String mealType) {
 		try {
-			stmt=conn.
+			stmt=conn.prepareStatement("select mtid from mealtype where mealtime=?");
+			stmt.setString(1, mealType);
+			rs=stmt.executeQuery();
+			if (rs.next()) {
+				return rs.getInt(1);
+			} else {
+				return -1;
+			}
 		}catch(Exception e) {
-			
+			System.err.println("Error is "+e);
+			return 0;
 		}
 	}
  	public int getCategoryIDByName(String category) {
@@ -99,5 +107,31 @@ public class RegistrationRepository extends DBConfig {
 	public void addCatMealReg(int rid,String category,String mealType) {
 		int cid = getCategoryIDByName(category);
 		int mtid=getMealIDByName(mealType);
+		try {
+			stmt=conn.prepareStatement("insert into catmealregjoin values(?,?,?)");
+			stmt.setInt(1, cid);
+			stmt.setInt(2, rid);
+			stmt.setInt(3, mtid);
+			int value=stmt.executeUpdate();
+		}catch(Exception e) {
+			System.err.println("Error is "+e);
+		}
+	}
+	public int countMonthlyMembers(String sdate,String edate) {
+		try {
+			Date sd=Date.valueOf(sdate);
+			Date ed=Date.valueOf(edate);
+			stmt=conn.prepareStatement("select count(rsdate) from registration where rsdate between ? and ? and category='Monthlytt' || category='Monthlyot'");
+			stmt.setDate(1, sd);
+			stmt.setDate(2, ed);
+			rs=stmt.executeQuery();
+			if(rs.next()) {
+				int count=rs.getInt(1);
+				return count;
+			}
+			return 0;
+		}catch(Exception e) {
+			return 0;
+		}
 	}
 }

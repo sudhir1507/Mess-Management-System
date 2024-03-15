@@ -7,7 +7,9 @@ import java.util.Properties;
 
 public class PathHelper {
 	// public static final String
-	// filePath="C:\\Users\\ACER\\eclipse-workspace\\questionbank";
+	public static final String filePath="C:\\Users\\ACER\\eclipse-workspace\\WeekMenu\\menu.csv";
+	public static final String username="admin";
+	public static final String password="pass";
 	public static String complatePath = "";
 	public static Properties p = new Properties();
 

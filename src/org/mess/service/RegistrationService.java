@@ -17,4 +17,7 @@ public class RegistrationService {
 	public void addCatMealReg(int rid,String category,String mealType) {
 		regRepo.addCatMealReg(rid, category, mealType);
 	}
+	public int countMonthlyMembers(String sdate,String edate) {
+		return regRepo.countMonthlyMembers(sdate,edate);
+	}
 }
