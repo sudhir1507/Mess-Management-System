@@ -59,10 +59,12 @@ public class MessManagementApplication {
 						System.out.println("5. Add MealType");
 						System.out.println("6. Add Week Menu");
 						System.out.println("7. Register Candidate");
-						System.out.println("8. Take Attendence");
-						System.out.println("9. Generate Bill");
-						// System.out.println("7. Count Monthly Members");
-						System.out.println("10. Back to Home");
+						System.out.println("8. See All Registration");
+						System.out.println("10. Take Attendence");
+						System.out.println("11. Generate Bill");
+						System.out.println("12. Count Monthly two times/one time/daily (Rice plate) Members");
+						System.out.println("13. Total bill of Daily Mamber ");
+						System.out.println("15. Back to Home");
 						ishome = true;
 						System.err.println("Enter choice");
 						int choice = sc.nextInt();
@@ -105,7 +107,7 @@ public class MessManagementApplication {
 							if (b) {
 								System.err.println("Category Updated Successfully..!");
 							} else {
-								System.err.println("Some Problem is there..!");
+								System.err.println("Category Not Found..!");
 							}
 							break;
 						case 4:
@@ -116,7 +118,7 @@ public class MessManagementApplication {
 							if (b) {
 								System.err.println("Category deleted Successfully..!");
 							} else {
-								System.err.println("Category Not Deleted..!");
+								System.err.println("Category Not Found..!");
 							}
 							break;
 						case 5:
@@ -145,9 +147,10 @@ public class MessManagementApplication {
 							break;
 						case 7:
 							sc.nextLine();
+							System.err.println("Register Candidate..!");
 							System.out.println("Choose Category");
 							category = sc.nextLine();
-							System.err.println("Register YourSelf..!");
+							
 							System.out.println("Enter Name");
 							String name = sc.nextLine();
 							System.out.println("Enter contact");
@@ -157,11 +160,11 @@ public class MessManagementApplication {
 							System.out.println("Enter Start date yyyy-mm-dd");
 							String sdate = sc.nextLine();
 							Date rsdate = Date.valueOf(sdate);
-							System.out.println("Enter Advance amount");
+							System.out.println("Enter some amount in advance");
 							int amount = sc.nextInt();
 							sc.nextLine();
 							Date redate;
-							if (category.equals("Monthlytt") || category.equals("Monthlyot")) {
+							if (category.equalsIgnoreCase("Monthlytt") || category.equalsIgnoreCase("Monthlyot")) {
 
 								System.out.println("Enter username");
 								username = sc.nextLine();
@@ -188,16 +191,28 @@ public class MessManagementApplication {
 							}
 							break;
 						case 8:
+							System.out.println("rid\tname\t\tcontact\t\taddress\t\trsdate\t\tredate\t\tamount\tusername\tpassword");
+							List<RegistrationModel> rlist=regService.getAllRegistrations();
+							for(RegistrationModel rm:rlist) {
+								System.out.println(rm.getRid()+"\t"+rm.getName()+"\t\t"+rm.getContact()+"\t\t"+ rm.getAddress()+"\t\t"+rm.getRsdate()+"\t"+ rm.getRedate()+"\t"+rm.getAmount()+"\t"+rm.getUsername()+"\t\t"+rm.getPassword());
+							}
+							break;
+						case 9:
+							
+							break;
+						case 10:
 							sc.nextLine();
-							System.out.println("Enter Registration ID Date and Status");
+							System.out.println("Enter Registration ID Date and Status and meal type");
 							int rid=sc.nextInt();
 							sc.nextLine();
 							String adate=sc.nextLine();
 							Date date=Date.valueOf(adate);
 							int status=sc.nextInt();
+							mtid=sc.nextInt();
 							amodel.setRid(rid);
 							amodel.setAdate(date);
 							amodel.setStatus(status);
+							amodel.setMtid(mtid);
 							result=AtteSerive.markAttenedence(amodel);
 							if(result==1) {
 								System.out.println("Attendence Marked..");
@@ -205,35 +220,63 @@ public class MessManagementApplication {
 								System.out.println("Attendence Not Marked..");
 							}
 							break;
-						case 9:
+						case 11:
 							sc.nextLine();
 							System.out.println("Enter date and your registration ID");
 							String bdate=sc.nextLine();
 							date=Date.valueOf(bdate);
 							rid=sc.nextInt();
 							bmodel.setBdate(date);
-							result=billService.billGenerator(bmodel,rid);
-							if(result==1) {
-								System.out.println("Bill Generated..");
+							List<BillModel> blist=billService.getBill(bmodel,rid);
+							int remain=0,bid=0;
+							if(blist!=null) {
+								System.err.println("Bill Generated..");
+								System.out.println("Bid\trid\tdate\t\tTotalAmount\tPaidAmount\tRamaining\tstatus");
+								for(BillModel m:blist) {
+									System.out.print(m.getBid()+"\t"+m.getRid()+"\t"+m.getBdate()+"\t"+m.getTotalAmount()+"\t\t"+m.getPaid()+"\t\t"+m.getRemaining()+"\t\t"+m.getBstatus()+"\n");
+									System.out.println("Your Ramining Amount "+m.getRemaining());
+									remain=m.getRemaining();
+									bid=m.getBid();
+								}
+//								System.out.println();
+//								if(remain>0) {
+//							    	sc.nextLine();
+//							    	System.out.println("Pay Amount Yes / No");
+//							    	    String ispay=sc.nextLine();
+//							    		if(ispay.equalsIgnoreCase("Yes")) {
+//							    			System.out.println("Enter Your remining amount");
+//							    			int remining=sc.nextInt();
+//							    			result=billService.updateBill(remining,rid,bid);
+//							    			if(result!=0) {
+//							    				System.out.println("Your Bill is Nill");
+//							    			}else {
+//							    				System.out.println("Please Pay All Remaining bill");
+//							    			}
+//							    		}	
+//							    }else {
+//							    	System.out.println("Your Bill is Nill");
+//							      }
 							}else {
 								System.out.println("Bill Not generated..");
 							}
 							
 							break;
-//						case 12:
-//							sc.nextLine();
-//							System.out.println("Enter start date:");
-//							sdate = sc.nextLine();
-//							System.out.println("Enter end date :");
-//							String edate = sc.nextLine();
-//							result = regService.countMonthlyMembers(sdate, edate);
-//							if (result != 0)
-//								System.out.println("Number of Monthly Members Regstration for " + sdate + "-" + edate
-//										+ " is " + result);
-//							else
-//								System.out.println("No Registrations found");
-//							break;
-						case 10:
+						case 12:
+							sc.nextLine();
+							System.out.println("Enter Month");
+							int month=sc.nextInt();
+							System.out.println("Enter Year :");
+							int year=sc.nextInt();
+							sc.nextLine();
+							System.out.println("Enter category");
+							category=sc.nextLine();
+							result = regService.countMembers(month,year,category);
+							if (result != 0)
+								System.out.println("Number of Members Register is :" + result);
+							else
+								System.out.println("No Registrations found");
+							break;
+						case 15:
 							ishome = false;
 							break;
 						default:

@@ -1,5 +1,5 @@
 package org.mess.service;
-
+import java.util.*;
 import org.mess.model.RegistrationModel;
 import org.mess.repository.RegistrationRepository;
 
@@ -17,7 +17,10 @@ public class RegistrationService {
 	public void addCatMealReg(int rid,String category,String mealType) {
 		regRepo.addCatMealReg(rid, category, mealType);
 	}
-	public int countMonthlyMembers(String sdate,String edate) {
-		return regRepo.countMonthlyMembers(sdate,edate);
+	public int countMembers(int month,int year,String category) {
+		return regRepo.countMembers(month,year,category);
+	}
+	public List<RegistrationModel> getAllRegistrations() {
+		return regRepo.getAllRegistrations();
 	}
 }

@@ -6,14 +6,22 @@ public class AttendenceModel {
 	private int rid;
 	private Date adate;
 	private int status;
+	private int mtid;
 	public AttendenceModel() {
 		
 	}
-	public AttendenceModel(int rid, Date adate, int status) {
+	public AttendenceModel(int rid, Date adate, int status,int mtid) {
 		super();
 		this.rid = rid;
 		this.adate = adate;
 		this.status = status;
+		this.mtid=mtid;
+	}
+	public int getMtid() {
+		return mtid;
+	}
+	public void setMtid(int mtid) {
+		this.mtid = mtid;
 	}
 	public int getRid() {
 		return rid;

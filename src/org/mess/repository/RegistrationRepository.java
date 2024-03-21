@@ -1,6 +1,8 @@
 package org.mess.repository;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mess.model.MealModel;
 import org.mess.model.RegistrationModel;
@@ -8,6 +10,7 @@ import org.mess.model.RegistrationModel;
 public class RegistrationRepository extends DBConfig {
 	RegistrationModel model=new RegistrationModel();
 	MealModel mmodel=new MealModel();
+	List<RegistrationModel> list=new ArrayList<RegistrationModel>();
 	public int getMealIDByName(String mealType) {
 		try {
 			stmt=conn.prepareStatement("select mtid from mealtype where mealtime=?");
@@ -117,13 +120,13 @@ public class RegistrationRepository extends DBConfig {
 			System.err.println("Error is "+e);
 		}
 	}
-	public int countMonthlyMembers(String sdate,String edate) {
+	public int countMembers(int month,int year,String category) {
+		int cid=getCategoryIDByName(category);
 		try {
-			Date sd=Date.valueOf(sdate);
-			Date ed=Date.valueOf(edate);
-			stmt=conn.prepareStatement("select count(rsdate) from registration where rsdate between ? and ? and category='Monthlytt' || category='Monthlyot'");
-			stmt.setDate(1, sd);
-			stmt.setDate(2, ed);
+			stmt=conn.prepareStatement("select count(distinct r.rid) from registration r inner join catmealregjoin cat on cat.rid=r.rid inner join category c on c.cid=cat.cid where MONTH(rsdate)=? and YEAR(rsdate)=? and (c.cid=?)");
+			stmt.setInt(1, month);
+			stmt.setInt(2, year);
+			stmt.setInt(3, cid);
 			rs=stmt.executeQuery();
 			if(rs.next()) {
 				int count=rs.getInt(1);
@@ -132,6 +135,29 @@ public class RegistrationRepository extends DBConfig {
 			return 0;
 		}catch(Exception e) {
 			return 0;
+		}
+	}
+	public List<RegistrationModel> getAllRegistrations() {
+		try {
+			stmt=conn.prepareStatement("select * from registration");
+			rs=stmt.executeQuery();
+			while(rs.next()) {
+				RegistrationModel rmodel=new RegistrationModel();
+				rmodel.setRid(rs.getInt(1));
+				rmodel.setName(rs.getString(2));
+				rmodel.setContact(rs.getString(3));
+				rmodel.setAddress(rs.getString(4));
+				rmodel.setRsdate(rs.getDate(5));
+				rmodel.setRedate(rs.getDate(6));
+				rmodel.setAmount(rs.getInt(7));
+				rmodel.setUsername(rs.getString(8));
+				rmodel.setPassword(rs.getString(9));
+				list.add(rmodel);
+			}
+			return list.size()>0?list:null;
+		}catch(Exception e) {
+			System.err.println("Error is "+e);
+			return null;
 		}
 	}
 }
