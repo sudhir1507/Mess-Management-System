@@ -17,7 +17,7 @@ public class RegistrationModel {
 		
 	}
 	public RegistrationModel(String name, String contact, String address, Date rsdate,Date redate, int amount,
-			String username, String password) {
+			String username, String password,int cid) {
 		super();
 		//this.rid = rid;
 		this.name = name;
@@ -28,7 +28,9 @@ public class RegistrationModel {
 		this.amount = amount;
 		this.username = username;
 		this.password = password;
+		this.cid=cid;
 	}
+	
 	public int getRid() {
 		return rid;
 	}

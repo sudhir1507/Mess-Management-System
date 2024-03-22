@@ -6,12 +6,12 @@ import java.util.List;
 import org.mess.model.BillModel;
 
 public class BillRepository extends DBConfig {
-	List<BillModel> list = new ArrayList<>();
+	
 
 	private int totalAmountByRid(int rid) {
 		try {
 			stmt = conn.prepareStatement(
-					"select fees from category where cid=(select cid from catmealregjoin where rid=?)");
+					"select fees from category where cid=(select cid from registration where rid=?)");
 			stmt.setInt(1, rid);
 			rs = stmt.executeQuery();
 			if (rs.next()) {
@@ -40,13 +40,23 @@ public class BillRepository extends DBConfig {
 			return 0;
 		}
 	}
-
+	private int getRidByBillId(int bid) {
+		try {
+			stmt=conn.prepareStatement("select rid from billgenerate where bid=?");
+			stmt.setInt(1, bid);
+			rs=stmt.executeQuery();
+			return rs.next()?rs.getInt(1):0;
+		}catch(Exception e) {
+			System.err.println("Error is "+e);
+			return 0;
+		}
+	}
 	public int billGenerator(BillModel bmodel, int rid) {
 		int totalAmount = totalAmountByRid(rid);
 		int paidAmount = getPaidAmountByRid(rid);
 		int ramaining = 0, extrapaid = 0;
 		ramaining = totalAmount - paidAmount;
-//		if(paidAmount>totalAmount) {
+//		if(paidAmount>totalAmount) {            //count
 //			extrapaid=paidAmount-totalAmount;
 //		}else {
 //			ramaining=totalAmount-paidAmount;
@@ -73,6 +83,7 @@ public class BillRepository extends DBConfig {
 	}
 
 	public List<BillModel> getBill(BillModel bmodel, int rid) {
+		List<BillModel> list = new ArrayList<>();
 		try {
 			if (billGenerator(bmodel, rid) > 0) {
 				stmt = conn.prepareStatement("select * from billgenerate where rid=?");
@@ -101,16 +112,40 @@ public class BillRepository extends DBConfig {
 		}
 
 	}
-
-	public int updateBill(int remaining, int bid, int rid) {
+	public int getRemainingBill(int bid) {
 		try {
-			int total = totalAmountByRid(rid);
-			int paid = getPaidAmountByRid(rid);
-			int remain = total - paid;
-			int updatepaid = paid + remaining;
-			remain = remain - remaining;
+			stmt=conn.prepareStatement("select remaining from billgenerate where bid=?");
+			stmt.setInt(1, bid);
+			rs=stmt.executeQuery();
+			
+				return rs.next()?rs.getInt(1):0;
+			
+		}catch(Exception e) {
+			System.err.println("Error is "+e);
+			return 0;
+		}
+	}
+	private void updatePaidBill(int rid,int updatePaid) {
+		try {
+			stmt=conn.prepareStatement("update registration set amount=? where rid=?");
+			stmt.setInt(1, updatePaid);
+			stmt.setInt(2, rid);
+			int value=stmt.executeUpdate();
+		}catch(Exception e) {
+			System.out.println();
+		}
+	}
+	public int updateBill(int remaining, int bid) {
+		try {
+			int rid=getRidByBillId(bid);
+			int total = totalAmountByRid(rid); //1500
+			int paid = getPaidAmountByRid(rid); //1000
+			int remain = total - paid; //500
+			int updatePaid = paid + remaining;  //1000+200=1200
+			updatePaidBill(rid,updatePaid);
+			remain = remain - remaining;  //500-200=300
 			stmt = conn.prepareStatement("update billgenerate set paid=?,remaining=?,bstatus=? where bid=?");
-			stmt.setInt(1, updatepaid);
+			stmt.setInt(1, updatePaid);
 			stmt.setInt(2, remain);
 			if (remain > 0) {
 				stmt.setInt(3, 0);
@@ -118,9 +153,22 @@ public class BillRepository extends DBConfig {
 				stmt.setInt(3, 1);
 			}
 			stmt.setInt(4, bid);
-			return stmt.executeUpdate() > 0 ? 1 : 0;
+			return stmt.executeUpdate() > 0 ? getRemainingBill(bid) : 0;
 		} catch (Exception e) {
 			System.err.println("Error is " + e);
+			return 0;
+		}
+	}
+	public int totalBillDailyMembers(int month,int year,int cid) {
+		try {
+			stmt=conn.prepareStatement("select sum(paid) from billgenerate where rid in(select rid from registration where cid=? and (month(rsdate)=? and year(rsdate)=?))");
+			stmt.setInt(1, cid);
+			stmt.setInt(2, month);
+			stmt.setInt(3, year);
+			rs=stmt.executeQuery();
+			return rs.next()?rs.getInt(1):0;
+		}catch(Exception e) {
+			System.err.println("Error is "+e);
 			return 0;
 		}
 	}

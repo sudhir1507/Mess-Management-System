@@ -63,10 +63,10 @@ public class RegistrationRepository extends DBConfig {
 
 	}
 
-	public boolean addRegistration(RegistrationModel rmodel, String category) {
+	public boolean addRegistration(RegistrationModel rmodel) {
 		try {
-			int cid = getCategoryIDByName(category);
-			stmt = conn.prepareStatement("insert into registration values('0',?,?,?,?,?,?,?,?)");
+			//int cid = getCategoryIDByName(category);
+			stmt = conn.prepareStatement("insert into registration values('0',?,?,?,?,?,?,?,?,?)");
 			stmt.setString(1, rmodel.getName());
 			stmt.setString(2, rmodel.getContact());
 			stmt.setString(3, rmodel.getAddress());
@@ -75,6 +75,7 @@ public class RegistrationRepository extends DBConfig {
 			stmt.setInt(6, rmodel.getAmount());
 			stmt.setString(7, rmodel.getUsername());
 			stmt.setString(8, rmodel.getPassword());
+			stmt.setInt(9, rmodel.getCid());
 			int value = stmt.executeUpdate();
 			if (value > 0) {
 //				stmt=conn.prepareStatement("insert into categoryRegistrationjoin values(?,?)");
@@ -91,22 +92,22 @@ public class RegistrationRepository extends DBConfig {
 			return false;
 		}
 	}
-	public RegistrationModel getLoginInfo(int rid) {
-		try {
-			stmt=conn.prepareStatement("select username,password from registration where rid=?");
-			stmt.setInt(1, rid);
-		    rs=stmt.executeQuery();
-			if(rs.next()) {
-				model.setUsername(rs.getString(1));
-				model.setPassword(rs.getString(2));
-				return model;
-			}else {
-				return null;
-			}
-		}catch(Exception e) {
-			return null;
-		}
-	}
+//	public RegistrationModel getLoginInfo(int rid) {
+//		try {
+//			stmt=conn.prepareStatement("select username,password from registration where rid=?");
+//			stmt.setInt(1, rid);
+//		    rs=stmt.executeQuery();
+//			if(rs.next()) {
+//				model.setUsername(rs.getString(1));
+//				model.setPassword(rs.getString(2));
+//				return model;
+//			}else {
+//				return null;
+//			}
+//		}catch(Exception e) {
+//			return null;
+//		}
+//	}
 	public void addCatMealReg(int rid,String category,String mealType) {
 		int cid = getCategoryIDByName(category);
 		int mtid=getMealIDByName(mealType);
@@ -120,10 +121,10 @@ public class RegistrationRepository extends DBConfig {
 			System.err.println("Error is "+e);
 		}
 	}
-	public int countMembers(int month,int year,String category) {
-		int cid=getCategoryIDByName(category);
+	public int countMembers(int month,int year,int cid) {
+		//int cid=getCategoryIDByName(category);
 		try {
-			stmt=conn.prepareStatement("select count(distinct r.rid) from registration r inner join catmealregjoin cat on cat.rid=r.rid inner join category c on c.cid=cat.cid where MONTH(rsdate)=? and YEAR(rsdate)=? and (c.cid=?)");
+			stmt=conn.prepareStatement("select count(rid) from registration where MONTH(rsdate)=? and YEAR(rsdate)=? and (cid=?)");
 			stmt.setInt(1, month);
 			stmt.setInt(2, year);
 			stmt.setInt(3, cid);
@@ -152,6 +153,7 @@ public class RegistrationRepository extends DBConfig {
 				rmodel.setAmount(rs.getInt(7));
 				rmodel.setUsername(rs.getString(8));
 				rmodel.setPassword(rs.getString(9));
+				rmodel.setCid(rs.getInt(10));
 				list.add(rmodel);
 			}
 			return list.size()>0?list:null;

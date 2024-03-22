@@ -10,7 +10,13 @@ public class BillService {
 	public List<BillModel> getBill(BillModel bmodel,int rid) {
 		return billRepo.getBill(bmodel,rid);
 	}
-	public int updateBill(int remaining,int bid,int rid) {
-		return billRepo.updateBill(remaining,bid,rid);
+	public int getRemainingBill(int bid) {
+		return billRepo.getRemainingBill(bid);
+	}
+	public int updateBill(int remaining,int bid) {
+		return billRepo.updateBill(remaining,bid);
+	}
+	public int totalBillDailyMembers(int month,int year,int cid) {
+		return billRepo.totalBillDailyMembers(month,year,cid);
 	}
 }

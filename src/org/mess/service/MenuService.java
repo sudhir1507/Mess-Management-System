@@ -14,7 +14,7 @@ public class MenuService {
 		
 	    try {
 	    	FileReader f=new FileReader(PathHelper.filePath);
-	    	BufferedReader br=new BufferedReader(f);   
+	    	BufferedReader br=new BufferedReader(f);   // line by line data read
 			String weekmenu;
 			boolean flag=false;
 			while((weekmenu=br.readLine())!=null) { 
