@@ -27,10 +27,10 @@ public class MessManagementApplication {
 		MealModel mmodel = new MealModel();
 		MealService mealService = new MealService();
 		MenuService menuService = new MenuService();
-		AttendenceModel amodel=new AttendenceModel();
-		AttendenceService AtteSerive=new AttendenceService();
-		BillModel bmodel=new BillModel();
-		BillService billService=new BillService();
+		AttendenceModel amodel = new AttendenceModel();
+		AttendenceService AtteSerive = new AttendenceService();
+		BillModel bmodel = new BillModel();
+		BillService billService = new BillService();
 		String username = "";
 		String password = "";
 		Scanner sc = new Scanner(System.in);
@@ -96,7 +96,7 @@ public class MessManagementApplication {
 							break;
 						case 3:
 							sc.nextLine();
-							System.out.println("Enter category ID, Category Name and Fees to Update");
+							System.out.println("Enter category ID, Fees,Category Name to Update");
 							int cid = sc.nextInt();
 							fees = sc.nextInt();
 							sc.nextLine();
@@ -150,8 +150,8 @@ public class MessManagementApplication {
 							sc.nextLine();
 							System.err.println("Register Candidate..!");
 							System.out.println("Choose Category");
-							//category = sc.nextLine();
-							cid=sc.nextInt();
+							
+							cid = sc.nextInt();
 							sc.nextLine();
 							System.out.println("Enter Name");
 							String name = sc.nextLine();
@@ -166,7 +166,7 @@ public class MessManagementApplication {
 							int amount = sc.nextInt();
 							sc.nextLine();
 							Date redate;
-							if (cid==1||cid==2) {
+							if (cid == 1 || cid == 2) {
 
 								System.out.println("Enter username");
 								username = sc.nextLine();
@@ -182,7 +182,7 @@ public class MessManagementApplication {
 
 							}
 							rmodel = new RegistrationModel(name, contact, address, rsdate, redate, amount, username,
-									password,cid);
+									password, cid);
 							b = regService.addRegistration(rmodel);
 							if (b) {
 								System.err.println("Registred Successfully..!");
@@ -193,87 +193,93 @@ public class MessManagementApplication {
 							}
 							break;
 						case 8:
-							System.out.println("rid\tname\t\tcontact\t\t\taddress\t\trsdate\t\tredate\t\tamount\tusername\tpassword\tcid");
-							List<RegistrationModel> rlist=regService.getAllRegistrations();
-							for(RegistrationModel rm:rlist) {
-								System.out.println(rm.getRid()+"\t"+rm.getName()+"\t\t"+rm.getContact()+"\t\t"+ rm.getAddress()+"\t\t"+rm.getRsdate()+"\t"+ rm.getRedate()+"\t"+rm.getAmount()+"\t"+rm.getUsername()+"\t\t"+rm.getPassword()+"\t\t"+rm.getCid());
+							System.out.println(
+									"rid\tname\t\tcontact\t\t\taddress\t\trsdate\t\tredate\t\tamount\tusername\tpassword\tcid");
+							List<RegistrationModel> rlist = regService.getAllRegistrations();
+							for (RegistrationModel rm : rlist) {
+								System.out.println(rm.getRid() + "\t" + rm.getName() + "\t\t" + rm.getContact() + "\t\t"
+										+ rm.getAddress() + "\t\t" + rm.getRsdate() + "\t" + rm.getRedate() + "\t"
+										+ rm.getAmount() + "\t" + rm.getUsername() + "\t\t" + rm.getPassword() + "\t\t"
+										+ rm.getCid());
 							}
 							break;
 						case 9:
 							sc.nextLine();
 							System.out.println("Enter Registration ID Date and Status and meal type");
-							int rid=sc.nextInt();
+							int rid = sc.nextInt();
 							sc.nextLine();
-							String adate=sc.nextLine();
-							Date date=Date.valueOf(adate);
-							int status=sc.nextInt();
-							mtid=sc.nextInt();
+							String adate = sc.nextLine();
+							Date date = Date.valueOf(adate);
+							int status = sc.nextInt();
+							mtid = sc.nextInt();
 							amodel.setRid(rid);
 							amodel.setAdate(date);
 							amodel.setStatus(status);
 							amodel.setMtid(mtid);
-							result=AtteSerive.markAttenedence(amodel);
-							if(result==1) {
+							result = AtteSerive.markAttenedence(amodel);
+							if (result == 1) {
 								System.out.println("Attendence Marked..");
-							}else {
+							} else {
 								System.out.println("Attendence Not Marked..");
 							}
 							break;
 						case 10:
 							sc.nextLine();
 							System.out.println("Enter registration ID");
-							rid=sc.nextInt();
+							rid = sc.nextInt();
 							sc.nextLine();
 							System.out.println("Enter start date");
-							sdate=sc.nextLine();
-							rsdate=Date.valueOf(sdate);
+							sdate = sc.nextLine();
+							rsdate = Date.valueOf(sdate);
 							System.out.println("Enter end date");
-							String edate=sc.nextLine();
-							redate=Date.valueOf(edate);
-							result=AtteSerive.getAttendenceCount(rid,rsdate,redate);
-							if(result!=0) {
-								System.out.println("Number of Days Member present "+result);
-							}else {
+							String edate = sc.nextLine();
+							redate = Date.valueOf(edate);
+							result = AtteSerive.getAttendenceCount(rid, rsdate, redate);
+							if (result != 0) {
+								System.out.println("Number of Days Member present " + result);
+							} else {
 								System.out.println("Attendence Not found");
 							}
 							break;
 						case 11:
 							sc.nextLine();
 							System.out.println("Enter date and your registration ID");
-							String bdate=sc.nextLine();
-							date=Date.valueOf(bdate);
-							rid=sc.nextInt();
+							String bdate = sc.nextLine();
+							date = Date.valueOf(bdate);
+							rid = sc.nextInt();
 							bmodel.setBdate(date);
-							List<BillModel> blist=billService.getBill(bmodel,rid);
-							
-							if(blist!=null) {
+							List<BillModel> blist = billService.getBill(bmodel, rid);
+
+							if (blist != null) {
 								System.err.println("Bill Generated..");
 								System.out.println("Bid\trid\tdate\t\tTotalAmount\tPaidAmount\tRamaining\tstatus");
-								for(BillModel m:blist) {
-									System.out.print(m.getBid()+"\t"+m.getRid()+"\t"+m.getBdate()+"\t"+m.getTotalAmount()+"\t\t"+m.getPaid()+"\t\t"+m.getRemaining()+"\t\t"+m.getBstatus()+"\n");
-									System.out.println("Your Ramining Amount "+m.getRemaining());
+								for (BillModel m : blist) {
+									System.out.print(m.getBid() + "\t" + m.getRid() + "\t" + m.getBdate() + "\t"
+											+ m.getTotalAmount() + "\t\t" + m.getPaid() + "\t\t" + m.getRemaining()
+											+ "\t\t" + m.getBstatus() + "\n");
+									System.out.println("Your Ramining Amount " + m.getRemaining());
 //									remain=m.getRemaining();
 //									bid=m.getBid();
 								}
 								System.out.println();
-								
-							}else {
+
+							} else {
 								System.out.println("Bill Not generated..");
 							}
-							
+
 							break;
-						
+
 						case 12:
 							sc.nextLine();
 							System.out.println("Enter Month");
-							int month=sc.nextInt();
+							int month = sc.nextInt();
 							System.out.println("Enter Year :");
-							int year=sc.nextInt();
-							//sc.nextLine();
+							int year = sc.nextInt();
+							// sc.nextLine();
 							System.out.println("Enter category id");
-							//category=sc.nextLine();
-							cid=sc.nextInt();
-							result = regService.countMembers(month,year,cid);
+							// category=sc.nextLine();
+							cid = sc.nextInt();
+							result = regService.countMembers(month, year, cid);
 							if (result != 0)
 								System.out.println("Number of Members Register is :" + result);
 							else
@@ -282,14 +288,15 @@ public class MessManagementApplication {
 						case 13:
 							sc.nextLine();
 							System.out.println("Enter Month");
-							month=sc.nextInt();
+							month = sc.nextInt();
 							System.out.println("Enter Year");
-							year=sc.nextInt();
+							year = sc.nextInt();
 							System.out.println("Enter Category id");
-							cid=sc.nextInt();
-							result=billService.totalBillDailyMembers(month,year,cid);
+							cid = sc.nextInt();
+							result = billService.totalBillDailyMembers(month, year, cid);
 							if (result != 0)
-								System.out.println("Total Bill of All Daily Members for month "+month+" is :" + result);
+								System.out.println(
+										"Total Bill of All Daily Members for month " + month + " is :" + result);
 							else
 								System.out.println("No Members came this month..");
 							break;
@@ -339,30 +346,30 @@ public class MessManagementApplication {
 					case 3:
 						sc.nextLine();
 						System.out.println("Enter Your Bill ID");
-						int bid=sc.nextInt();
-						int remain=billService.getRemainingBill(bid);
-						System.out.println("Your Remaining Bill is "+remain);
-						if(remain>0) {
-					    	sc.nextLine();
-					    	System.out.println("Pay Amount Yes / No");
-					    	    String ispay=sc.nextLine();
-					    		if(ispay.equalsIgnoreCase("Yes")) {
-					    			System.out.println("Enter Your remining amount");
-					    			int remaining=sc.nextInt();
-					    			int result=billService.updateBill(remaining,bid);
-					    			if(result<=0) {
-					    				System.out.println("Your Bill is Nill");
-					    			}else {
-					    				System.out.println("Your bill is NOT Nill..Please Pay All Remaining bill");
-					    				System.out.println("Remaining bill "+result);
-					    			}
-					    		}else {
-					    			System.out.println("Your Ramaining Bill is "+remain);
-					    			System.out.println("Plase Pay Next Time...");
-					    		}
-					    }else {
-					    	System.out.println("Your Bill is Nill");
-					     }
+						int bid = sc.nextInt();
+						int remain = billService.getRemainingBill(bid);
+						System.out.println("Your Remaining Bill is " + remain);
+						if (remain > 0) {
+							sc.nextLine();
+							System.out.println("Pay Amount Yes / No");
+							String ispay = sc.nextLine();
+							if (ispay.equalsIgnoreCase("Yes")) {
+								System.out.println("Enter Your remining amount");
+								int remaining = sc.nextInt();
+								int result = billService.updateBill(remaining, bid);
+								if (result <= 0) {
+									System.out.println("Your Bill is Nill");
+								} else {
+									System.out.println("Your bill is NOT Nill..Please Pay All Remaining bill");
+									System.out.println("Remaining bill " + result);
+								}
+							} else {
+								System.out.println("Your Ramaining Bill is " + remain);
+								System.out.println("Plase Pay Next Time...");
+							}
+						} else {
+							System.out.println("Your Bill is Nill");
+						}
 						break;
 //					case 3:
 //						sc.nextLine();
